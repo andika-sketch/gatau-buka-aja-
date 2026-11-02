@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Untuk Dede 💌</title>
+<style>
+:root{--bg1:#2b1b3d;--bg2:#12091f;--card:#fff8f0;--ink:#4a2c3f;--acc:#ff8fb1;color-scheme:dark}
+@media(prefers-color-scheme:light){:root{}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:radial-gradient(ellipse at top,var(--bg1),var(--bg2));font-family:'Segoe UI',system-ui,sans-serif;color:#fff;overflow:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.screen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:opacity .8s}
+.hide{opacity:0;pointer-events:none}
+#env{cursor:pointer;text-align:center}
+.envelope{position:relative;width:240px;height:160px;background:#f7c6d4;border-radius:8px;box-shadow:0 12px 40px #0008;margin:0 auto;animation:fl 3s ease-in-out infinite}
+.envelope:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,#f2a9bf 50%) left/50% 100% no-repeat,linear-gradient(225deg,transparent 50%,#f2a9bf 50%) right/50% 100% no-repeat;border-radius:8px}
+.flap{position:absolute;top:0;left:0;width:100%;height:90px;background:#f5b5c8;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .8s}
+.heart{position:absolute;top:62px;left:50%;transform:translateX(-50%);font-size:34px;z-index:2}
+.open .flap{transform:rotateX(180deg)}
+@keyframes fl{50%{transform:translateY(-10px)}}
+#env p{margin-top:28px;opacity:.85;font-size:15px}
+#stage{display:flex;flex-direction:column;align-items:center;gap:16px;max-width:520px;width:100%}
+.polas{display:flex;justify-content:center;height:210px;align-items:center}
+.pola{background:#fff;padding:8px 8px 30px;box-shadow:0 8px 24px #0009;width:130px;transform:rotate(var(--r)) scale(.6);opacity:0;transition:all .8s;margin:0 -6px}
+.pola img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.pola span{display:block;text-align:center;color:#6b4a5c;font:13px 'Segoe Script','Bradley Hand',cursive;margin-top:6px}
+.pola.show{opacity:1;transform:rotate(var(--r)) scale(1)}
+.msg{background:var(--card);color:var(--ink);border-radius:16px;padding:22px 22px;font-size:17px;line-height:1.65;box-shadow:0 10px 30px #0006;width:100%;min-height:150px;text-align:center;animation:in .7s}
+@keyframes in{from{opacity:0;transform:translateY(14px)}}
+.nav{display:flex;gap:12px;align-items:center}
+button{background:var(--acc);border:0;color:#4a1330;font-size:16px;padding:10px 22px;border-radius:999px;cursor:pointer;font-weight:600}
+button:disabled{opacity:.35}
+.dots{font-size:13px;opacity:.7;min-width:44px;text-align:center}
+.fh{position:fixed;z-index:3;pointer-events:none;animation:up 2.2s forwards;font-size:22px}
+@keyframes up{to{transform:translateY(-160px);opacity:0}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="screen" id="env"><div class="envelope" id="e"><div class="flap"></div><div class="heart">💌</div></div><p>ada surat buat dede… ketuk amplopnya ya ✨</p></div>
+<div class="screen hide" id="main"><div id="stage"><div class="msg" id="msg"></div><div class="nav"><button id="prev">←</button><span class="dots" id="dots"></span><button id="next">→</button></div></div></div>
+<script>
+const IMGS=[],S=[["halowww dede yang paling cantik, maniss, dan lucuuu 💕<br>bertemu lagi nih dengan pesan mas hehehe. gimana magangnyaaa? seneng atau malah jadi pusing xixixixi 😆", 0], ["mas mau ngomong sesuatu nih buat dede, tapi sebelum itu mas punya tebak-tebakan dulu.<br><b>“minuman apa yang cape?”</b><br>nescapeee 🤣 ga lucu yaa? maaf deh, soalnya yang lucu itu dede hahahaha. dah ahh, cape ngetik, boleh telpon aja ga? ehh ga jadi deh 😅", null], ["jadiii, mas mau berterima kasih banyak karena dede udah jadi perempuan yang hebat dan baik.<br>mas senang banget bisa ketemu sama dede di tahun ini. dari sekian banyak hal yang terjadi, pertemuan sama dede jadi salah satu bagian terindah yang mas dapatkan. mas bersyukur bisa kenal dede.", 1], ["kalau bisa milih buat selamanya sama dede, mas udah milih dari dulu kali yaaa 🤣 tapi yaa dede kan juga punya pacar, jadinya ya udah dehhh, ga jadiii hehe.<br>yang penting mas senang bisa kenal dede dan jadi bagian dari cerita mas.", null], ["pokoknya kalau dede butuh mas, mas selalu ada, yaaa kalau dede ga butuh, mas ngilang dulu, palingan kerja atau tidur 🤣🤣 gitu-gitu aja terus hidup mas wkwkwk.", 2], ["tapi serius nih, mas harap dede bisa terus ngelewatin hari-harinya dengan baik.<br>kalau lagi cape, istirahat yaa. kalau pusing, jangan terlalu dipaksain. dede udah hebat bisa sampai sejauh ini, jadi jangan lupa menghargai diri sendiri juga.", null], ["semangat terus yaaa dede. semoga banyak hal baik yang datang ke kehidupan dede, selalu bahagia, dan senyumnya ga pernah hilang.<br>terima kasih udah hadir di tahun ini dan jadi salah satu pertemuan paling indah buat mas.", null], ["jaga diri baik-baik yaaa, dede. ❤️", null]];
+const rot=[-7,3,-3],cap=["dede 🤍","dede 🐶","dede ✨"];
+let i=0;const $=id=>document.getElementById(id);
+const polas={children:[]};
+IMGS.forEach((s,k)=>{const d=document.createElement("div");d.className="pola";d.style.setProperty("--r",rot[k]+"deg");d.innerHTML='<img alt="" src="'+s+'"><span>'+cap[k]+'</span>';polas.appendChild(d)});
+function render(){const [t,p]=S[i];$("msg").style.animation="none";void $("msg").offsetWidth;$("msg").style.animation="";$("msg").innerHTML=t;
+ [...polas.children].forEach((d,k)=>d.classList.toggle("show",k<=Math.max(0,S.slice(0,i+1).reduce((a,x)=>x[1]!==null?x[1]:a,-1))&&S.slice(0,i+1).some(x=>x[1]!==null)));
+ $("dots").textContent=(i+1)+" / "+S.length;$("prev").disabled=i==0;$("next").disabled=i==S.length-1;}
+$("prev").onclick=()=>{if(i>0){i--;render()}};$("next").onclick=()=>{if(i<S.length-1){i++;render();hearts()}};
+function hearts(){for(let k=0;k<6;k++){const h=document.createElement("div");h.className="fh";h.textContent=["💗","🌸","✨"][k%3];h.style.left=(30+Math.random()*40)+"%";h.style.top=(55+Math.random()*20)+"%";document.body.appendChild(h);setTimeout(()=>h.remove(),2300)}}
+$("env").onclick=()=>{$("e").classList.add("open");setTimeout(()=>{$("env").classList.add("hide");$("main").classList.remove("hide");render();hearts()},900)};
+const cv=$("c"),x=cv.getContext("2d");let P=[];
+function sz(){cv.width=innerWidth;cv.height=innerHeight}sz();addEventListener("resize",sz);
+for(let k=0;k<70;k++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2+.5,v:Math.random()*.4+.15,p:k%4==0,a:Math.random()*6});
+(function f(){x.clearRect(0,0,cv.width,cv.height);P.forEach(o=>{o.y+=o.v;o.a+=.02;if(o.y>cv.height){o.y=-10;o.x=Math.random()*cv.width}
+ if(o.p){x.save();x.translate(o.x+Math.sin(o.a)*20,o.y);x.rotate(o.a);x.fillStyle="#ffb7c9cc";x.beginPath();x.ellipse(0,0,6,3.5,0,0,7);x.fill();x.restore()}
+ else{x.fillStyle="rgba(255,255,255,"+(.4+.4*Math.sin(o.a*3))+")";x.beginPath();x.arc(o.x,o.y,o.r,0,7);x.fill()}});requestAnimationFrame(f)})();
+</script></body></html>
